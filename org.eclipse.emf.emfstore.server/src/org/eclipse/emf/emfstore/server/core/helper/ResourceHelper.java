@@ -11,13 +11,17 @@
 package org.eclipse.emf.emfstore.server.core.helper;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.emfstore.common.model.ModelElementId;
 import org.eclipse.emf.emfstore.common.model.Project;
@@ -34,6 +38,7 @@ import org.eclipse.emf.emfstore.server.model.versioning.Version;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AbstractOperation;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.CreateDeleteOperation;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.impl.CreateDeleteOperationImpl;
+import org.eclipselabs.mongo.emf.MongoURIHandlerImpl;
 
 /**
  * Helper for creating resources etc.
@@ -52,7 +57,8 @@ public class ResourceHelper {
 	 * @throws FatalEmfStoreException
 	 *             in case of failure
 	 */
-	public ResourceHelper(ServerSpace serverSpace) throws FatalEmfStoreException {
+	public ResourceHelper(ServerSpace serverSpace)
+			throws FatalEmfStoreException {
 		this.serverSpace = serverSpace;
 	}
 
@@ -64,9 +70,11 @@ public class ResourceHelper {
 	 * @throws FatalEmfStoreException
 	 *             if saving fails
 	 */
-	public void createResourceForProjectHistory(ProjectHistory projectHistory) throws FatalEmfStoreException {
-		String fileName = getProjectFolder(projectHistory.getProjectId()) + "projectHistory"
-			+ ServerConfiguration.FILE_EXTENSION_PROJECTHISTORY;
+	public void createResourceForProjectHistory(ProjectHistory projectHistory)
+			throws FatalEmfStoreException {
+		String fileName = getProjectFolder(projectHistory.getProjectId())
+				+ "projectHistory"
+				+ ServerConfiguration.FILE_EXTENSION_PROJECTHISTORY;
 		saveInResource(projectHistory, fileName);
 	}
 
@@ -80,9 +88,12 @@ public class ResourceHelper {
 	 * @throws FatalEmfStoreException
 	 *             if saving fails
 	 */
-	public void createResourceForVersion(Version version, ProjectId projectId) throws FatalEmfStoreException {
-		String fileName = getProjectFolder(projectId) + ServerConfiguration.FILE_PREFIX_VERSION
-			+ version.getPrimarySpec().getIdentifier() + ServerConfiguration.FILE_EXTENSION_VERSION;
+	public void createResourceForVersion(Version version, ProjectId projectId)
+			throws FatalEmfStoreException {
+		String fileName = getProjectFolder(projectId)
+				+ ServerConfiguration.FILE_PREFIX_VERSION
+				+ version.getPrimarySpec().getIdentifier()
+				+ ServerConfiguration.FILE_EXTENSION_VERSION;
 		saveInResource(version, fileName);
 	}
 
@@ -98,9 +109,11 @@ public class ResourceHelper {
 	 * @throws FatalEmfStoreException
 	 *             if saving fails
 	 */
-	public void createResourceForProject(Project project, PrimaryVersionSpec versionId, ProjectId projectId)
-		throws FatalEmfStoreException {
-		String filename = getProjectFolder(projectId) + getProjectFile(versionId.getIdentifier());
+	public void createResourceForProject(Project project,
+			PrimaryVersionSpec versionId, ProjectId projectId)
+			throws FatalEmfStoreException {
+		String filename = getProjectFolder(projectId)
+				+ getProjectFile(versionId.getIdentifier());
 		saveInResourceWithProject(project, filename, project);
 	}
 
@@ -116,9 +129,11 @@ public class ResourceHelper {
 	 * @throws FatalEmfStoreException
 	 *             if saving fails
 	 */
-	public void createResourceForChangePackage(ChangePackage changePackage, PrimaryVersionSpec versionId,
-		ProjectId projectId) throws FatalEmfStoreException {
-		String filename = getProjectFolder(projectId) + getChangePackageFile(versionId.getIdentifier());
+	public void createResourceForChangePackage(ChangePackage changePackage,
+			PrimaryVersionSpec versionId, ProjectId projectId)
+			throws FatalEmfStoreException {
+		String filename = getProjectFolder(projectId)
+				+ getChangePackageFile(versionId.getIdentifier());
 		List<Map.Entry<EObject, ModelElementId>> ignoredDatatypes = new ArrayList<Map.Entry<EObject, ModelElementId>>();
 
 		for (AbstractOperation op : changePackage.getOperations()) {
@@ -126,7 +141,7 @@ public class ResourceHelper {
 				CreateDeleteOperation createDeleteOp = (CreateDeleteOperation) op;
 
 				for (Map.Entry<EObject, ModelElementId> e : ((CreateDeleteOperationImpl) createDeleteOp)
-					.getEObjectToIdMap().entrySet()) {
+						.getEObjectToIdMap().entrySet()) {
 
 					EObject modelElement = e.getKey();
 
@@ -157,7 +172,8 @@ public class ResourceHelper {
 		int lastVersion = version.getPrimarySpec().getIdentifier();
 		Resource projectResource = version.getProjectState().eResource();
 
-		File file = new File(getProjectFolder(projectId) + getProjectFile(lastVersion));
+		File file = new File(getProjectFolder(projectId)
+				+ getProjectFile(lastVersion));
 		version.setProjectState(null);
 		file.delete();
 
@@ -184,21 +200,26 @@ public class ResourceHelper {
 	 *            allow zero for x
 	 * @return x
 	 */
-	public int getXFromPolicy(String policy, String defaultPolicy, boolean allowZero) {
+	public int getXFromPolicy(String policy, String defaultPolicy,
+			boolean allowZero) {
 		int x;
 		try {
-			x = Integer.parseInt(ServerConfiguration.getProperties().getProperty(policy, defaultPolicy));
+			x = Integer.parseInt(ServerConfiguration.getProperties()
+					.getProperty(policy, defaultPolicy));
 		} catch (NumberFormatException e) {
 			x = 1;
-			ModelUtil.logWarning("Couldn't read property: " + policy + " , x set to 1", e);
+			ModelUtil.logWarning("Couldn't read property: " + policy
+					+ " , x set to 1", e);
 		}
 		if (x < 0) {
 			x = 1;
-			ModelUtil.logWarning("Policy " + policy + " with x < 0 not possible, x set to 1.");
+			ModelUtil.logWarning("Policy " + policy
+					+ " with x < 0 not possible, x set to 1.");
 		}
 		if (!allowZero && x == 0) {
 			x = 1;
-			ModelUtil.logWarning("Policy " + policy + " with x = 0 not possible, x set to 1.");
+			ModelUtil.logWarning("Policy " + policy
+					+ " with x = 0 not possible, x set to 1.");
 		}
 		return x;
 	}
@@ -211,34 +232,40 @@ public class ResourceHelper {
 	 * @return file path
 	 */
 	public String getProjectFolder(ProjectId projectId) {
-		return ServerConfiguration.getServerHome() + ServerConfiguration.FILE_PREFIX_PROJECTFOLDER + projectId.getId()
-			+ File.separatorChar;
+		return ServerConfiguration.getServerHome()
+				+ ServerConfiguration.FILE_PREFIX_PROJECTFOLDER
+				+ projectId.getId() + File.separatorChar;
 	}
 
 	private String getProjectFile(int versionNumber) {
 		return ServerConfiguration.FILE_PREFIX_PROJECTSTATE + versionNumber
-			+ ServerConfiguration.FILE_EXTENSION_PROJECTSTATE;
+				+ ServerConfiguration.FILE_EXTENSION_PROJECTSTATE;
 	}
 
 	private String getChangePackageFile(int versionNumber) {
 		return ServerConfiguration.FILE_PREFIX_CHANGEPACKAGE + versionNumber
-			+ ServerConfiguration.FILE_EXTENSION_CHANGEPACKAGE;
+				+ ServerConfiguration.FILE_EXTENSION_CHANGEPACKAGE;
 	}
 
-	private void saveInResource(EObject obj, String fileName) throws FatalEmfStoreException {
-		Resource resource = serverSpace.eResource().getResourceSet().createResource(URI.createFileURI(fileName));
+	private void saveInResource(EObject obj, String fileName)
+			throws FatalEmfStoreException {
+		Resource resource = serverSpace.eResource().getResourceSet()
+				.createResource(URI.createFileURI(fileName));
 		resource.getContents().add(obj);
 		save(obj);
 	}
 
-	private void saveInResourceWithProject(EObject obj, String fileName, Project project) throws FatalEmfStoreException {
-		Resource resource = serverSpace.eResource().getResourceSet().createResource(URI.createFileURI(fileName));
+	private void saveInResourceWithProject(EObject obj, String fileName,
+			Project project) throws FatalEmfStoreException {
+		Resource resource = serverSpace.eResource().getResourceSet()
+				.createResource(URI.createFileURI(fileName));
 		resource.getContents().add(obj);
 
 		if (resource instanceof XMIResource) {
 			XMIResource xmiResource = (XMIResource) resource;
 			for (EObject modelElement : project.getAllModelElements()) {
-				ModelElementId modelElementId = project.getModelElementId(modelElement);
+				ModelElementId modelElementId = project
+						.getModelElementId(modelElement);
 				xmiResource.setID(modelElement, modelElementId.getId());
 			}
 		}
@@ -258,13 +285,15 @@ public class ResourceHelper {
 	 * @throws FatalEmfStoreException
 	 *             in case of failure
 	 */
-	public void saveWithProject(EObject eObject, Project project) throws FatalEmfStoreException {
+	public void saveWithProject(EObject eObject, Project project)
+			throws FatalEmfStoreException {
 		Resource resource = eObject.eResource();
 
 		if (resource instanceof XMIResource) {
 			XMIResource xmiResource = (XMIResource) resource;
 			for (EObject modelElement : project.getAllModelElements()) {
-				ModelElementId modelElementId = project.getModelElementId(modelElement);
+				ModelElementId modelElementId = project
+						.getModelElementId(modelElement);
 				xmiResource.setID(modelElement, modelElementId.getId());
 			}
 		}
@@ -283,6 +312,21 @@ public class ResourceHelper {
 	public void save(EObject object) throws FatalEmfStoreException {
 		try {
 			object.eResource().save(ModelUtil.getResourceSaveOptions());
+			// BEGIN MONGODB PROVE OF CONCEPT
+			ResourceSet resourceSet = new ResourceSetImpl();
+			EList uriHandlers = resourceSet.getURIConverter().getURIHandlers();
+			uriHandlers.add(0, new MongoURIHandlerImpl());
+
+			Resource resource = resourceSet.createResource(URI
+					.createURI("mongo://127.0.0.1:27017/emf/objects/"));
+			resource.getContents().add(object);
+
+			try {
+				object.eResource().save(null);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			// END MONGODB PROVE OF CONCEPT
 			// BEGIN SUPRESS CATCH EXCEPTION
 		} catch (Exception e) {
 			throw new FatalEmfStoreException(StorageException.NOSAVE, e);
@@ -298,7 +342,8 @@ public class ResourceHelper {
 	 *             in case of failure
 	 */
 	public void saveAll() throws FatalEmfStoreException {
-		for (Resource res : serverSpace.eResource().getResourceSet().getResources()) {
+		for (Resource res : serverSpace.eResource().getResourceSet()
+				.getResources()) {
 			if (res.isLoaded() && res.isModified()) {
 				try {
 					res.save(ModelUtil.getResourceSaveOptions());
