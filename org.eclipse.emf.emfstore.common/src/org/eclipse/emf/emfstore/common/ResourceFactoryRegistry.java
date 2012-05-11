@@ -25,7 +25,8 @@ public class ResourceFactoryRegistry extends XMIResourceFactoryImpl implements R
 
 	@Override
 	public Resource createResource(URI uri) {
-		return new EMFStoreResource(uri);
+		//return new EMFStoreResource(uri);
+		return new MongoDBResource(uri);
 	}
 
 	public Factory getFactory(URI uri) {
