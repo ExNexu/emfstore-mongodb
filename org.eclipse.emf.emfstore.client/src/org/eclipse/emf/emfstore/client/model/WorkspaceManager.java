@@ -192,45 +192,50 @@ public final class WorkspaceManager {
 		// enable auto-save by default
 		Configuration.setAutoSave(true);
 
-		URI fileURI = URI.createFileURI(Configuration.getWorkspacePath());
-		File workspaceFile = new File(Configuration.getWorkspacePath());
-		final Workspace workspace;
+		URI resourceUri = URI.createFileURI(Configuration.getWorkspacePath());
+
+		// File workspaceFile = new File(Configuration.getWorkspacePath());
+		Workspace workspace = null;
 		final Resource resource;
-		if (!workspaceFile.exists()) {
 
-			workspace = createNewWorkspace(resourceSet, fileURI);
+		resourceSet.getLoadOptions().putAll(ModelUtil.getResourceLoadOptions());
+		resource = resourceSet.createResource(resourceUri);
+		try {
+			resource.load(ModelUtil.getResourceLoadOptions());
+		} catch (IOException e) {
+			// throw new FatalEmfStoreException(StorageException.NOLOAD, e);
+			e.printStackTrace();
+		}
 
-		} else {
-			// file exists load it
+		EList<EObject> contents = resource.getContents();
+		for (EObject content : contents) {
+			if (content instanceof Workspace) {
+				workspace = (Workspace) content;
+				break;
+			}
+		}
+
+		if (workspace != null) {
 			// check if a migration is needed
 			migrateModel(resourceSet);
-
-			// resource = resourceSet.getResource(fileURI, true);
-			resource = resourceSet.createResource(fileURI);
-
-			try {
-				resource.load(ModelUtil.getResourceLoadOptions());
-			} catch (IOException e) {
-				WorkspaceUtil.logException("Error while loading workspace.", e);
-			}
-
-			EList<EObject> directContents = resource.getContents();
-			// MK cast
-			workspace = (Workspace) directContents.get(0);
+		} else {
+			// if no workspace can be loaded, create one
+			ModelUtil.logInfo("Creating initial workspace...");
+			workspace = createNewWorkspace(resourceSet, resourceUri);
 		}
 
 		workspace.setConnectionManager(this.connectionManager);
 		workspace.setResourceSet(resourceSet);
+		final Workspace transferWs = workspace;
 
 		new EMFStoreCommand() {
 			@Override
 			protected void doRun() {
-				workspace.init();
+				transferWs.init();
 			}
 		}.run(true);
 
 		return workspace;
-
 	}
 
 	private EditingDomain createEditingDomain(ResourceSet resourceSet) {
