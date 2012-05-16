@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="org.eclipse.emf.emfstore.common.resourcefactory.mongodb"
+         name="MongoDBResourceFactory"
+         point="org.eclipse.emf.emfstore.common.resourcefactory">
+      <resourcefactory
+            class="org.eclipse.emf.emfstore.common.resourcefactory.mongodb.MongoDBResourceFactory"
+            factory="org.eclipse.emf.emfstore.common.resourcefactory.mongodb.MongoDBResourceFactory"
+            resourcefactory="org.eclipse.emf.emfstore.common.resourcefactory.mongodb.MongoDBResourceFactory">
+      </resourcefactory>
+   </extension>
+
+</plugin>
