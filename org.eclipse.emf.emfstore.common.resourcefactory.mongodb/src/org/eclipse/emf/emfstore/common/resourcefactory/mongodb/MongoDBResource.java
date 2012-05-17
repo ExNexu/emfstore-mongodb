@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.emf.emfstore.common.EMFStoreResource;
 import org.eclipselabs.mongo.emf.MongoURIHandlerImpl;
 
-public class MongoDBResource extends XMIResourceImpl {
+public class MongoDBResource extends EMFStoreResource {
 
 	private static org.eclipse.emf.ecore.resource.URIHandler uriHandler;;
 
