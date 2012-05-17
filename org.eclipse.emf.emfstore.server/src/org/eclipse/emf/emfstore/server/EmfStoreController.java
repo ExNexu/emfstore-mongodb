@@ -231,12 +231,14 @@ public class EmfStoreController implements IApplication, Runnable {
 	}
 
 	private ServerSpace initServerSpace() throws FatalEmfStoreException {
-		ResourceStorage storage = initStorage();
-		URI resourceUri = storage.init(properties);
+		String pathName = ServerConfiguration.getServerMainFile();
+		URI resourceUri = URI.createFileURI(pathName);
 		ResourceSet resourceSet = new ResourceSetImpl();
 		resourceSet.setResourceFactoryRegistry(new ResourceFactoryRegistry());
 		resourceSet.getLoadOptions().putAll(ModelUtil.getResourceLoadOptions());
+		System.out.println("ResourceUri: " + resourceUri);
 		resource = resourceSet.createResource(resourceUri);
+
 		try {
 			resource.load(ModelUtil.getResourceLoadOptions());
 
@@ -246,7 +248,8 @@ public class EmfStoreController implements IApplication, Runnable {
 				ModelUtil.logInfo("Validation complete.");
 			}
 		} catch (IOException e) {
-			throw new FatalEmfStoreException(StorageException.NOLOAD, e);
+			e.printStackTrace();
+			// throw new FatalEmfStoreException(StorageException.NOLOAD, e);
 		}
 
 		ServerSpace result = null;
