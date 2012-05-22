@@ -198,13 +198,11 @@ public final class WorkspaceManager {
 		Workspace workspace = null;
 		final Resource resource;
 
-		resourceSet.getLoadOptions().putAll(ModelUtil.getResourceLoadOptions());
 		resource = resourceSet.createResource(resourceUri);
 		try {
 			resource.load(ModelUtil.getResourceLoadOptions());
 		} catch (IOException e) {
-			// throw new FatalEmfStoreException(StorageException.NOLOAD, e);
-			e.printStackTrace();
+			ModelUtil.logInfo("Could not load workspace...");
 		}
 
 		EList<EObject> contents = resource.getContents();

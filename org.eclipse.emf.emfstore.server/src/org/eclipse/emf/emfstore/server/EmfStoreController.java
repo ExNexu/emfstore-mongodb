@@ -16,7 +16,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Properties;
@@ -52,7 +51,6 @@ import org.eclipse.emf.emfstore.server.model.accesscontrol.roles.RolesFactory;
 import org.eclipse.emf.emfstore.server.startup.EmfStoreValidator;
 import org.eclipse.emf.emfstore.server.startup.ExtensionManager;
 import org.eclipse.emf.emfstore.server.startup.MigrationManager;
-import org.eclipse.emf.emfstore.server.storage.ResourceStorage;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 
@@ -236,9 +234,7 @@ public class EmfStoreController implements IApplication, Runnable {
 		ResourceSet resourceSet = new ResourceSetImpl();
 		resourceSet.setResourceFactoryRegistry(new ResourceFactoryRegistry());
 		resourceSet.getLoadOptions().putAll(ModelUtil.getResourceLoadOptions());
-		System.out.println("ResourceUri: " + resourceUri);
 		resource = resourceSet.createResource(resourceUri);
-
 		try {
 			resource.load(ModelUtil.getResourceLoadOptions());
 
@@ -248,8 +244,7 @@ public class EmfStoreController implements IApplication, Runnable {
 				ModelUtil.logInfo("Validation complete.");
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
-			// throw new FatalEmfStoreException(StorageException.NOLOAD, e);
+			ModelUtil.logInfo("Could not load server space...");
 		}
 
 		ServerSpace result = null;
@@ -308,40 +303,6 @@ public class EmfStoreController implements IApplication, Runnable {
 	 */
 	public static EmfStoreController getInstance() {
 		return instance;
-	}
-
-	private ResourceStorage initStorage() throws FatalEmfStoreException {
-		String className = properties.getProperty(ServerConfiguration.RESOURCE_STORAGE,
-			ServerConfiguration.RESOURCE_STORAGE_DEFAULT);
-
-		ResourceStorage resourceStorage;
-		final String failMessage = "Failed loading ressource storage!";
-		try {
-			ModelUtil.logInfo("Using RessourceStorage \"" + className + "\".");
-			resourceStorage = (ResourceStorage) Class.forName(className).getConstructor().newInstance();
-			return resourceStorage;
-		} catch (IllegalArgumentException e) {
-			ModelUtil.logException(failMessage, e);
-			throw new FatalEmfStoreException(failMessage, e);
-		} catch (SecurityException e) {
-			ModelUtil.logException(failMessage, e);
-			throw new FatalEmfStoreException(failMessage, e);
-		} catch (InstantiationException e) {
-			ModelUtil.logException(failMessage, e);
-			throw new FatalEmfStoreException(failMessage, e);
-		} catch (IllegalAccessException e) {
-			ModelUtil.logException(failMessage, e);
-			throw new FatalEmfStoreException(failMessage, e);
-		} catch (InvocationTargetException e) {
-			ModelUtil.logException(failMessage, e);
-			throw new FatalEmfStoreException(failMessage, e);
-		} catch (NoSuchMethodException e) {
-			ModelUtil.logException(failMessage, e);
-			throw new FatalEmfStoreException(failMessage, e);
-		} catch (ClassNotFoundException e) {
-			ModelUtil.logException(failMessage, e);
-			throw new FatalEmfStoreException(failMessage, e);
-		}
 	}
 
 	private AccessControlImpl initAccessControl(ServerSpace serverSpace) throws FatalEmfStoreException {
