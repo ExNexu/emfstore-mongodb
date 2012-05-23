@@ -18,22 +18,28 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionElement;
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionPoint;
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
-
 /**
- * 
+ * The Class ResourceFactoryRegistry.
+ *
  * @author emueller
  */
 public class ResourceFactoryRegistry extends XMIResourceFactoryImpl implements Resource.Factory.Registry {
 	
-	private ResourceFactoryImpl factory=null;
+	/** The factory. */
+	private ResourceFactoryImpl factory;
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl#createResource(org.eclipse.emf.common.util.URI)
+	 */
 	@Override
 	public Resource createResource(URI uri) {
 		return new EMFStoreResource(uri);
 	}
-	
-	
+
+	/** {@inheritDoc}*/
 	public Factory getFactory(URI uri) {
+		// The first time this method is called it will look for a registered resourcefactory-plugin, if there
+		// is none the default XMI-Storage will be used.
 		if (this.factory == null) {
 			ExtensionElement element = new ExtensionPoint("org.eclipse.emf.emfstore.common.resourcefactory").getElementWithHighestPriority();
 			if (element != null) {
@@ -46,18 +52,22 @@ public class ResourceFactoryRegistry extends XMIResourceFactoryImpl implements R
 		return this.factory;
 	}
 
+	/** {@inheritDoc}*/
 	public Factory getFactory(URI uri, String contentType) {
 		return this.getFactory(null);
 	}
 
+	/** {@inheritDoc}*/
 	public Map<String, Object> getProtocolToFactoryMap() {
 		return null;
 	}
 
+	/** {@inheritDoc}*/
 	public Map<String, Object> getExtensionToFactoryMap() {
 		return null;
 	}
 
+	/** {@inheritDoc}*/
 	public Map<String, Object> getContentTypeToFactoryMap() {
 		return null;
 	}
