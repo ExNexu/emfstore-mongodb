@@ -1,34 +1,44 @@
+/*******************************************************************************
+ * Copyright (c) 2008-2012 Chair for Applied Software Engineering,
+ * Technische Universitaet Muenchen.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ ******************************************************************************/
 package org.eclipse.emf.emfstore.common.resourcefactory.mongodb;
-
-import java.util.HashMap;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.URIConverter;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.emf.emfstore.common.EMFStoreResource;
 import org.eclipselabs.mongo.emf.MongoURIHandlerImpl;
 
+/**
+ * A MongoDBResource.
+ * 
+ * @author Stefan Bleibinhaus
+ * @author Tobias Verhoeven
+ */
 public class MongoDBResource extends EMFStoreResource {
 
+	/** The uri handler. */
 	private static org.eclipse.emf.ecore.resource.URIHandler uriHandler;;
 
-	public MongoDBResource(URI uri_) {
-		super(mongoDbUriFromEmfUri(uri_));
-	
-		System.out.println("URI-: " + uri_);
+	/**
+	 * Instantiates a new mongo db resource.
+	 * 
+	 * @param uri the uri
+	 */
+	public MongoDBResource(URI uri) {
+		super(uri);
 	}
-	
-	private static URI mongoDbUriFromEmfUri(URI uri) {
-		if (uri.toString().startsWith("mongo")) {
-			return uri;
-		}
-	
-		return URI.createURI("mongo://127.0.0.1:27017/emf/objects/"
-			+ uri.devicePath().replace("/", "-"));
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.emf.ecore.resource.impl.ResourceImpl#getURIConverter()
+	 */
 	@Override
 	protected URIConverter getURIConverter() {
 		URIConverter result = getDefaultURIConverter();
