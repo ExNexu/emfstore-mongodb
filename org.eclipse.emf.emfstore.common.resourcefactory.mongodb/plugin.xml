@@ -6,9 +6,7 @@
          name="MongoDBResourceFactory"
          point="org.eclipse.emf.emfstore.common.resourcefactory">
       <resourcefactory
-            class="org.eclipse.emf.emfstore.common.resourcefactory.mongodb.MongoDBResourceFactory"
-            factory="org.eclipse.emf.emfstore.common.resourcefactory.mongodb.MongoDBResourceFactory"
-            resourcefactory="org.eclipse.emf.emfstore.common.resourcefactory.mongodb.MongoDBResourceFactory">
+            class="org.eclipse.emf.emfstore.common.resourcefactory.mongodb.MongoDBResourceFactory">
       </resourcefactory>
    </extension>
 
