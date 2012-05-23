@@ -29,6 +29,7 @@ public class MongoDBResourceFactory extends XMIResourceFactoryImpl {
 	 */
 	@Override
 	public Resource createResource(URI uri) {
+		//TODO: load mongoDB-URL from a property file
 		if (!uri.toString().startsWith("mongo://")) {
 			uri = URI.createURI("mongo://127.0.0.1:27017/emf/objects/" + uri.devicePath().replace("/", "-"));
 		}
