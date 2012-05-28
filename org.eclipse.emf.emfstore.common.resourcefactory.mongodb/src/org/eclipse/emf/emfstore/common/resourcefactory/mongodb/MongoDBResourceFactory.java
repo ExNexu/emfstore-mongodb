@@ -23,15 +23,17 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
  */
 public class MongoDBResourceFactory extends XMIResourceFactoryImpl {
 
+	private static final String MONGO_PROTOCOL = "mongo://";
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl#createResource(org.eclipse.emf.common.util.URI)
 	 */
 	@Override
 	public Resource createResource(URI uri) {
-		//TODO: load mongoDB-URL from a property file
-		if (!uri.toString().startsWith("mongo://")) {
-			uri = URI.createURI("mongo://127.0.0.1:27017/emf/objects/" + uri.devicePath().replace("/", "-"));
+		if (!uri.toString().startsWith(MONGO_PROTOCOL)) {
+			uri = URI.createURI(MongoDBResourceConfiguration.MongoDBResourceURI + uri.devicePath().replace("/", "-"));
+			System.out.println(uri);
 		}
 		return new MongoDBResource(uri);
 	}
