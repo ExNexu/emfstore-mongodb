@@ -25,7 +25,7 @@ import org.eclipselabs.mongo.emf.MongoURIHandlerImpl;
 public class MongoDBResource extends EMFStoreResource {
 
 	/** The uri handler. */
-	private static org.eclipse.emf.ecore.resource.URIHandler uriHandler;;
+	private static org.eclipse.emf.ecore.resource.URIHandler uriHandler;
 
 	/**
 	 * Instantiates a new mongo db resource.

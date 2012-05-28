@@ -32,7 +32,7 @@ public class MongoDBResourceFactory extends XMIResourceFactoryImpl {
 	@Override
 	public Resource createResource(URI uri) {
 		if (!uri.toString().startsWith(MONGO_PROTOCOL)) {
-			uri = URI.createURI(MongoDBResourceConfiguration.MongoDBResourceURI + uri.devicePath().replace("/", "-"));
+			uri = URI.createURI(MongoDBResourceConfiguration.getMongoDBResourceURI() + uri.devicePath().replace("/", "-"));
 			System.out.println(uri);
 		}
 		return new MongoDBResource(uri);
