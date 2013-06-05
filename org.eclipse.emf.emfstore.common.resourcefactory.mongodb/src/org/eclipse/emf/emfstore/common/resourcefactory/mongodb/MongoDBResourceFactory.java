@@ -11,6 +11,8 @@
 
 package org.eclipse.emf.emfstore.common.resourcefactory.mongodb;
 
+import java.util.regex.Pattern;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
@@ -24,6 +26,8 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 public class MongoDBResourceFactory extends XMIResourceFactoryImpl {
 
 	private static final String MONGO_PROTOCOL = "mongo://";
+	private static final Pattern ILLEGAL_CHARACTER_PATTERN = Pattern.compile("\\.|/");
+	private static final String REPLACEMENT_STRING = "|";
 
 	/*
 	 * (non-Javadoc)
@@ -32,8 +36,8 @@ public class MongoDBResourceFactory extends XMIResourceFactoryImpl {
 	@Override
 	public Resource createResource(URI uri) {
 		if (!uri.toString().startsWith(MONGO_PROTOCOL)) {
-			uri = URI.createURI(MongoDBResourceConfiguration.mongoDBResourceURI + uri.devicePath().replace("/", "-"));
-			System.out.println(uri);
+			uri = URI.createURI(MongoDBResourceConfiguration.mongoDBResourceURI
+				+ ILLEGAL_CHARACTER_PATTERN.matcher(uri.devicePath()).replaceAll(REPLACEMENT_STRING));
 		}
 		return new MongoDBResource(uri);
 	}
